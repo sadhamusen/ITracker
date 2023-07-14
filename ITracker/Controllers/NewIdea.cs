@@ -10,6 +10,6 @@
         public int idOfOwner { get; set; }
         
 
-        public int approverId { get; set; }
+        
     }
 }

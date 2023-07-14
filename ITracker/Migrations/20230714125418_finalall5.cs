@@ -5,7 +5,7 @@
 namespace ITracker.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial1 : Migration
+    public partial class finalall5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,11 +71,11 @@ namespace ITracker.Migrations
                     endDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     signOff = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    isDelete = table.Column<int>(type: "int", nullable: true),
-                    like = table.Column<int>(type: "int", nullable: true),
+                    isDelete = table.Column<int>(type: "int", nullable: false),
+                    like = table.Column<int>(type: "int", nullable: false),
                     idOfOwner = table.Column<int>(type: "int", nullable: false),
                     IdOFUser = table.Column<int>(type: "int", nullable: true),
-                    approverId = table.Column<int>(type: "int", nullable: false),
+                    approverId = table.Column<int>(type: "int", nullable: true),
                     IdOfApprover = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -124,6 +124,54 @@ namespace ITracker.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "contributorTable",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    taskId = table.Column<int>(type: "int", nullable: false),
+                    ideaId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_contributorTable", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_contributorTable_ideaTable_ideaId",
+                        column: x => x.ideaId,
+                        principalTable: "ideaTable",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "taskApproversTable",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    approverId = table.Column<int>(type: "int", nullable: false),
+                    IdOfApprover = table.Column<int>(type: "int", nullable: false),
+                    taskId = table.Column<int>(type: "int", nullable: false),
+                    IdOfTask = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_taskApproversTable", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_taskApproversTable_approversTable_IdOfApprover",
+                        column: x => x.IdOfApprover,
+                        principalTable: "approversTable",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_taskApproversTable_ideaTable_IdOfTask",
+                        column: x => x.IdOfTask,
+                        principalTable: "ideaTable",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_commentsTable_IdOfIdea",
                 table: "commentsTable",
@@ -133,6 +181,11 @@ namespace ITracker.Migrations
                 name: "IX_commentsTable_Owner",
                 table: "commentsTable",
                 column: "Owner");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_contributorTable_ideaId",
+                table: "contributorTable",
+                column: "ideaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ideaTable_IdOfApprover",
@@ -145,6 +198,16 @@ namespace ITracker.Migrations
                 column: "IdOFUser");
 
             migrationBuilder.CreateIndex(
+                name: "IX_taskApproversTable_IdOfApprover",
+                table: "taskApproversTable",
+                column: "IdOfApprover");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_taskApproversTable_IdOfTask",
+                table: "taskApproversTable",
+                column: "IdOfTask");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_usersTable_UserType",
                 table: "usersTable",
                 column: "UserType");
@@ -155,6 +218,12 @@ namespace ITracker.Migrations
         {
             migrationBuilder.DropTable(
                 name: "commentsTable");
+
+            migrationBuilder.DropTable(
+                name: "contributorTable");
+
+            migrationBuilder.DropTable(
+                name: "taskApproversTable");
 
             migrationBuilder.DropTable(
                 name: "ideaTable");

@@ -31,8 +31,9 @@ namespace InitiativeTracker.Models
         [ForeignKey ("IdOFUser")]
         public virtual User? User { get; set; }
 
+
         [DisplayName("AppId")]
-        public int approverId { get; set; }
+        public int? approverId { get; set; }
 
        
 

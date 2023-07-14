@@ -5,7 +5,7 @@
 namespace ITracker.Migrations
 {
     /// <inheritdoc />
-    public partial class finalall : Migration
+    public partial class finalall6 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

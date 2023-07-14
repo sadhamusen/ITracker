@@ -18,5 +18,7 @@ namespace InitiativeTracker.DataBaseConnection
         public DbSet<Approver> approversTable { get; set; }
 
         public DbSet<Contributor> contributorTable { get; set; }
+
+        public DbSet<TaskApprovers> taskApproversTable { get; set;}
     }
 }

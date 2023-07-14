@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITracker.Migrations
 {
     [DbContext(typeof(DatabaseAccess))]
-    [Migration("20230713130911_Initial5")]
-    partial class Initial5
+    [Migration("20230714125418_finalall5")]
+    partial class finalall5
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,35 @@ namespace ITracker.Migrations
                     b.HasIndex("ideaId");
 
                     b.ToTable("contributorTable");
+                });
+
+            modelBuilder.Entity("ITracker.Models.TaskApprovers", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdOfApprover")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdOfTask")
+                        .HasColumnType("int");
+
+                    b.Property<int>("approverId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("taskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdOfApprover");
+
+                    b.HasIndex("IdOfTask");
+
+                    b.ToTable("taskApproversTable");
                 });
 
             modelBuilder.Entity("InitiativeTracker.Models.Approver", b =>
@@ -120,7 +149,7 @@ namespace ITracker.Migrations
                     b.Property<int?>("IdOfApprover")
                         .HasColumnType("int");
 
-                    b.Property<int>("approverId")
+                    b.Property<int?>("approverId")
                         .HasColumnType("int");
 
                     b.Property<string>("endDate")
@@ -129,10 +158,10 @@ namespace ITracker.Migrations
                     b.Property<int>("idOfOwner")
                         .HasColumnType("int");
 
-                    b.Property<int?>("isDelete")
+                    b.Property<int>("isDelete")
                         .HasColumnType("int");
 
-                    b.Property<int?>("like")
+                    b.Property<int>("like")
                         .HasColumnType("int");
 
                     b.Property<string>("longDescription")
@@ -219,6 +248,25 @@ namespace ITracker.Migrations
                     b.HasOne("InitiativeTracker.Models.Idea", "idea")
                         .WithMany()
                         .HasForeignKey("ideaId");
+
+                    b.Navigation("idea");
+                });
+
+            modelBuilder.Entity("ITracker.Models.TaskApprovers", b =>
+                {
+                    b.HasOne("InitiativeTracker.Models.Approver", "Approver")
+                        .WithMany()
+                        .HasForeignKey("IdOfApprover")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InitiativeTracker.Models.Idea", "idea")
+                        .WithMany()
+                        .HasForeignKey("IdOfTask")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Approver");
 
                     b.Navigation("idea");
                 });

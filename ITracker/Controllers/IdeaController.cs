@@ -22,7 +22,16 @@ namespace ITracker.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Idea>>> get()
         {
-            return await databaseAccess.ideaTable.ToListAsync();
+            var allData = databaseAccess.ideaTable.Where(x => x.isDelete == 0);
+
+            //return await databaseAccess.ideaTable.ToListAsync();
+            return Ok(allData);
+        }
+        [HttpGet]
+        [Route("todo")]
+        public async Task<IActionResult> getTodo() {
+            var todo = databaseAccess.ideaTable.Where(x=>x.status== "Idea Proposed");
+            return Ok(todo);
         }
 
         [HttpPost]
@@ -36,9 +45,9 @@ namespace ITracker.Controllers
           
             idea.status = "Idea Proposed";
             idea.idOfOwner = newIdea.idOfOwner;
-            idea.approverId = newIdea.approverId;
+          //  idea.approverId = newIdea.approverId;
 
-            idea.Approver= databaseAccess.approversTable.FirstOrDefault(x=>x.id==newIdea.approverId);
+           // idea.Approver= databaseAccess.approversTable.FirstOrDefault(x=>x.id==newIdea.approverId);
 
             idea.User = databaseAccess.usersTable.FirstOrDefault(x => x.id == newIdea.idOfOwner);
 
@@ -84,7 +93,16 @@ namespace ITracker.Controllers
             await databaseAccess.SaveChangesAsync();
             return Ok(idea);
         }
-
+        [HttpPut]
+        [Route("delete/{deletetaskId:int}")]
+        public async Task<IActionResult> delete([FromRoute] int deletetaskId)
+        {
+            Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == deletetaskId);
+            idea.isDelete = 1;
+            databaseAccess.ideaTable.Update(idea);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(idea);
+        }
 
 
     }
