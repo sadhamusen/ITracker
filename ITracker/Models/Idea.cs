@@ -21,9 +21,9 @@ namespace InitiativeTracker.Models
 
         public string? signOff { get; set; }
 
-        public int? isDelete { get; set; }
+        public int isDelete { get; set; }
 
-        public int? like { get;set; }
+        public int like { get;set; }
 
         [DisplayName("OwnerId")]
         public int idOfOwner { get; set; }

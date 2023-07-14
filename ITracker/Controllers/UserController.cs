@@ -14,7 +14,7 @@ namespace ITracker.Controllers
 
         public UserController(DatabaseAccess access)
         {
-            this.databaseAccess = access;
+            databaseAccess = access;
         }
 
         [HttpGet]
@@ -44,7 +44,9 @@ namespace ITracker.Controllers
             user.userName = newUser.userName;
             user.email = newUser.email;
             user.password = encodedData;
+            user.Role = databaseAccess.rolesTable.Find(3);
 
+            user.rId = user.Role.id;
 
 
             await databaseAccess.usersTable.AddAsync(user);
@@ -88,7 +90,25 @@ namespace ITracker.Controllers
             return BadRequest(msg);
         }
 
+        [HttpPut]
+        public async Task<ActionResult<User>> edituser(EditUser  editUser)
+        {
+            User user = databaseAccess.usersTable.FirstOrDefault(x => x.id.Equals(editUser.id));
+            user.Role=databaseAccess.rolesTable.Find(editUser.rId);
+            user.rId = user.Role.id;
+
+            databaseAccess.usersTable.Update(user);
+            await databaseAccess.SaveChangesAsync();
+
+
+            return Ok(user);
+
+        }
+
+
+
 
     }
+    
 }
 

@@ -23,7 +23,7 @@ namespace ITracker.Controllers
            // var result= await databaseAccess.commentsTable.ToListAsync();
 
             var q = (from c in databaseAccess.commentsTable join b in databaseAccess.ideaTable on c.Taskid equals b.Id 
-                     select new {Task_id=c.Taskid,Comments=c.Comment, User=c.user.userName, Role = c.user.Role.type}).ToList();
+                     select new {Task_id=c.Taskid,Comments=c.Comment, User=c.user.userName, Role = c.user.Role.type,commentsTime=c.CommentsTimeOnly}).ToList();
 
             return Ok(q);   
         }

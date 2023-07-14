@@ -4,6 +4,7 @@ using InitiativeTracker.DataBaseConnection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITracker.Migrations
 {
     [DbContext(typeof(DatabaseAccess))]
-    partial class DatabaseAccessModelSnapshot : ModelSnapshot
+    [Migration("20230714051406_final55")]
+    partial class final55
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +129,7 @@ namespace ITracker.Migrations
                     b.Property<int>("idOfOwner")
                         .HasColumnType("int");
 
-                    b.Property<int>("isDelete")
+                    b.Property<int?>("isDelete")
                         .HasColumnType("int");
 
                     b.Property<int>("like")

@@ -2,7 +2,7 @@
 {
     public class NewContributor
     {
-        public int id { get; set; }
+        public int taskId { get; set; }
         public string Name { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using InitiativeTracker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ITracker.Controllers
 {
@@ -41,11 +42,6 @@ namespace ITracker.Controllers
 
             idea.User = databaseAccess.usersTable.FirstOrDefault(x => x.id == newIdea.idOfOwner);
 
-
-
-
-
-
             await databaseAccess.ideaTable.AddAsync(idea);
 
             await databaseAccess.SaveChangesAsync();
@@ -53,5 +49,43 @@ namespace ITracker.Controllers
 
             return Ok(idea);
         }
+        [HttpPut]
+        public async Task<IActionResult> updateidea(Updateidea updateidea) {
+            Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == updateidea.Id);
+            idea.title = updateidea.title;
+            idea.shortDescription=updateidea.shortDescription;
+            idea.longDescription=updateidea.longDescription;
+            idea.status = updateidea.status;
+            idea.signOff = updateidea.signOff;
+            databaseAccess.ideaTable.Update(idea);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(idea);
+
+        }
+        [HttpPut]
+        [Route("{taskId:int}")]
+        public async Task<IActionResult> updatedate([FromRoute]int taskId)
+        {
+            Idea idea =databaseAccess.ideaTable.FirstOrDefault(x=>x.Id==taskId);
+            idea.startDate =   DateTime.Now.ToShortDateString();
+            idea.endDate = DateTime.Now.ToShortTimeString();
+         
+            databaseAccess.ideaTable.Update(idea);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(idea);
+        }
+        [HttpPut]
+        [Route("like/{liketaskId:int}")]
+        public async Task<IActionResult> like([FromRoute] int liketaskId)
+        {
+            Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == liketaskId);
+            idea.like = idea.like + 1;
+            databaseAccess.ideaTable.Update(idea);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(idea);
+        }
+
+
+
     }
 }
