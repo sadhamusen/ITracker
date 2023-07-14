@@ -19,7 +19,7 @@ namespace ITracker.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> get()
-        {
+        {  
             return await databaseAccess.usersTable.ToListAsync();
         }
 

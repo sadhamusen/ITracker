@@ -28,12 +28,40 @@ namespace ITracker.Controllers
             return Ok(allData);
         }
         [HttpGet]
+        [Route("newidea")]
+        public async Task<IActionResult> newidea() {
+            var new_idea = databaseAccess.ideaTable.Where(x=>x.status== "new idea");
+            return Ok(new_idea);
+        }
+        [HttpGet]
         [Route("todo")]
-        public async Task<IActionResult> getTodo() {
-            var todo = databaseAccess.ideaTable.Where(x=>x.status== "Idea Proposed");
+        public async Task<IActionResult> getTodo()
+        {
+            var todo = databaseAccess.ideaTable.Where(x => x.status == "To do");
             return Ok(todo);
         }
+        [HttpGet]
+        [Route("inprogess")]
+        public async Task<IActionResult> inprogress()
+        {
+            var inprogress = databaseAccess.ideaTable.Where(x => x.status == "Inprogress");
+            return Ok(inprogress);
+        }
+        [HttpGet]
+        [Route("inreview")]
+        public async Task<IActionResult> inreview()
+        {
+            var inreview = databaseAccess.ideaTable.Where(x => x.status == "Inreview");
+            return Ok(inreview);
+        }
+        [HttpGet]
+        [Route("highestlike")]
+        public async Task<IActionResult> highestlike() {
+            var query = databaseAccess.ideaTable.OrderByDescending(p => p.like).FirstOrDefault();
 
+            return Ok(new { id=query.Id });
+
+        }
         [HttpPost]
         public async Task<ActionResult<Idea>> add(NewIdea newIdea)
         {
