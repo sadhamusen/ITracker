@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITracker.Migrations
 {
     [DbContext(typeof(DatabaseAccess))]
-    [Migration("20230714125418_finalall5")]
-    partial class finalall5
+    [Migration("20230715032944_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
