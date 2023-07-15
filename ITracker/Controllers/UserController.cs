@@ -1,8 +1,12 @@
-﻿using InitiativeTracker.DataBaseConnection;
+﻿using Azure.Core;
+using InitiativeTracker.DataBaseConnection;
 using InitiativeTracker.Models;
+using ITracker.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace ITracker.Controllers
 {
@@ -10,98 +14,41 @@ namespace ITracker.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DatabaseAccess databaseAccess;
-
-        public UserController(DatabaseAccess access)
+        // private readonly DatabaseAccess databaseAccess;
+        public userService userService;
+        public UserController(DatabaseAccess access, IConfiguration configuration)
         {
-            databaseAccess = access;
+            userService = new userService(access, configuration);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> get()
-        {  
-            return await databaseAccess.usersTable.ToListAsync();
+        public async Task<IActionResult> get()
+        {
+            return Ok(await userService.getAlluser());
         }
 
         [HttpPost]
-        public async Task<ActionResult<User>> add(NewUser newUser)
+        public async Task<ActionResult> add(NewUser newUser)
         {
-            var Emailcheck = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email));
-            if (Emailcheck != null)
-            {
-                return BadRequest("Email Already Exist");
-            }
-            var Usercheck = this.databaseAccess.usersTable.FirstOrDefault(x => x.userName.Equals(newUser.userName));
-            if (Usercheck != null)
-            {
-                return BadRequest("User Exist");
-            }
-            var password = newUser.password;
-            byte[] encData_byte = new byte[password.Length];
-            encData_byte = System.Text.Encoding.UTF8.GetBytes(password);
-            string encodedData = Convert.ToBase64String(encData_byte);
-            User user = new User();
-            user.userName = newUser.userName;
-            user.email = newUser.email;
-            user.password = encodedData;
-            user.Role = databaseAccess.rolesTable.Find(3);
-
-            user.rId = user.Role.id;
-
-
-            await databaseAccess.usersTable.AddAsync(user);
-
-            user.Role=databaseAccess.rolesTable.Find(3);
-
-            await databaseAccess.SaveChangesAsync();
-
-
+            var user = await userService.postuser(newUser);
             return Ok(user);
         }
         [HttpPost]
         [Route("/auth")]
-        public async Task<IActionResult> UserAuth(NewUser newUser)
+
+        public async Task<ActionResult<User>> UserAuth(NewUser newUser)
         {
             // Find the value by the id of the customer.
+            var user = await userService.authuser(newUser);
 
-            User user = new User();
-            string msg = "user not Found";
-            var userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email));
-            if (userSearch == null)
-            {
-                return BadRequest(msg);
-            }
-            var password = newUser.password;
-            byte[] encData_byte = new byte[password.Length];
-            encData_byte = System.Text.Encoding.UTF8.GetBytes(password);
-            string encodedData = Convert.ToBase64String(encData_byte);
-            password = encodedData;
-
-            userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email) && x.password.Equals(password));
-
-            if (userSearch != null)
-            {
-
-                user.Role = databaseAccess.rolesTable.Find(3);
-
-                return Ok(new { user.Role });
-            }
-            msg = "User and Password combo is wrong";
-            return BadRequest(msg);
+            return Ok(user.Value.Role);
         }
 
         [HttpPut]
-        public async Task<ActionResult<User>> edituser(EditUser  editUser)
+
+        public async Task<ActionResult> edit(EditUser editUser)
         {
-            User user = databaseAccess.usersTable.FirstOrDefault(x => x.id.Equals(editUser.id));
-            user.Role=databaseAccess.rolesTable.Find(editUser.rId);
-            user.rId = user.Role.id;
-
-            databaseAccess.usersTable.Update(user);
-            await databaseAccess.SaveChangesAsync();
-
-
-            return Ok(user);
+            return Ok(await userService.update(editUser));
 
         }
 
@@ -109,6 +56,6 @@ namespace ITracker.Controllers
 
 
     }
-    
+
 }
 

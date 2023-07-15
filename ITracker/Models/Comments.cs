@@ -26,7 +26,7 @@ namespace InitiativeTracker.Models
 
         public User user { get; set; }
 
-        
+
 
 
     }

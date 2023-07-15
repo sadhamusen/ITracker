@@ -23,22 +23,19 @@ namespace InitiativeTracker.Models
 
         public int isDelete { get; set; }
 
-        public int like { get;set; }
+        public int like { get; set; }
 
         [DisplayName("OwnerId")]
         public int idOfOwner { get; set; }
 
-        [ForeignKey ("IdOFUser")]
+        [ForeignKey("IdOFUser")]
         public virtual User? User { get; set; }
 
 
         [DisplayName("AppId")]
         public int? approverId { get; set; }
 
-       
 
 
-        [ForeignKey("IdOfApprover")]
-        public Approver? Approver { get; set; }
     }
 }

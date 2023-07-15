@@ -1,5 +1,6 @@
 ﻿using InitiativeTracker.DataBaseConnection;
 using ITracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,18 +27,21 @@ namespace ITracker.Controllers
 
             return Ok(result);*/
 
-            var query = (from a in databaseAccess.contributorTable join b in databaseAccess.ideaTable on a.idea.Id equals b.Id where a.taskId ==taskId
-                    select new { a.Name,a.taskId,b.User.userName}).ToList();
+            var query = (from a in databaseAccess.contributorTable
+                         join b in databaseAccess.ideaTable on a.idea.Id equals b.Id
+                         where a.taskId == taskId
+                         select new { a.Name, a.taskId, b.User.userName }).ToList();
 
             return Ok(query);
 
         }
         [HttpPost]
         public async Task<ActionResult<Contributor>> add(NewContributor newContributor)
-        { Contributor contributor=new Contributor();
-            contributor.Name= newContributor.Name;
+        {
+            Contributor contributor = new Contributor();
+            contributor.Name = newContributor.Name;
             contributor.taskId = newContributor.taskId;
-            contributor.idea= databaseAccess.ideaTable.Find(contributor.taskId);
+            contributor.idea = databaseAccess.ideaTable.Find(contributor.taskId);
 
             await databaseAccess.AddAsync(contributor);
 

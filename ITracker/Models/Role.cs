@@ -10,6 +10,6 @@ namespace InitiativeTracker.Models
         [Required]
         public string type { get; set; }
 
-        
+
     }
 }

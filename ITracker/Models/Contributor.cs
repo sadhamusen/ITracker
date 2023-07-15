@@ -9,7 +9,7 @@ namespace ITracker.Models
         public int id { get; set; }
         public string Name { get; set; }
 
-        [Display (Name= "TaskId")]
+        [Display(Name = "TaskId")]
         public int taskId { get; set; }
 
         [ForeignKey("ideaId")]

@@ -1,8 +1,10 @@
 ﻿using InitiativeTracker.DataBaseConnection;
 using InitiativeTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace ITracker.Controllers
 {
@@ -16,16 +18,16 @@ namespace ITracker.Controllers
         {
             this.databaseAccess = databaseAccess;
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Comments>>> get()
         {
-           // var result= await databaseAccess.commentsTable.ToListAsync();
+            // var result= await databaseAccess.commentsTable.ToListAsync();
 
-            var q = (from c in databaseAccess.commentsTable join b in databaseAccess.ideaTable on c.Taskid equals b.Id 
-                     select new {Task_id=c.Taskid,Comments=c.Comment, User=c.user.userName, Role = c.user.Role.type,commentsTime=c.CommentsTimeOnly}).ToList();
+            var q = (from c in databaseAccess.commentsTable
+                     join b in databaseAccess.ideaTable on c.Taskid equals b.Id
+                     select new { Task_id = c.Taskid, Comments = c.Comment, User = c.user.userName, Role = c.user.Role.type, commentsTime = c.CommentsTimeOnly }).ToList();
 
-            return Ok(q);   
+            return Ok(q);
         }
 
         [HttpPost]
@@ -44,7 +46,7 @@ namespace ITracker.Controllers
 
             await databaseAccess.commentsTable.AddAsync(comments);
 
-            await databaseAccess.SaveChangesAsync();    
+            await databaseAccess.SaveChangesAsync();
 
             return Ok(newComments);
 

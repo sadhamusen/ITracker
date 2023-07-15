@@ -13,13 +13,15 @@ namespace ITracker.Models
         public int approverId { get; set; }
 
         [ForeignKey("IdOfApprover")]
-        public Approver Approver { get; set; }
+        public User approver { get; set; }
 
 
         [DisplayName("TaskId")]
         public int taskId { get; set; }
 
         [ForeignKey("IdOfTask")]
-        public Idea idea { get; set; }    
+        public Idea idea { get; set; }
+
+        public string status { get; set; }
     }
 }

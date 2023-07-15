@@ -1,9 +1,12 @@
 ﻿using InitiativeTracker.DataBaseConnection;
 using InitiativeTracker.Models;
+using ITracker.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace ITracker.Controllers
 {
@@ -11,11 +14,12 @@ namespace ITracker.Controllers
     [ApiController]
     public class IdeaController : ControllerBase
     {
-
+        public ideaService ideaService;
         private readonly DatabaseAccess databaseAccess;
 
         public IdeaController(DatabaseAccess databaseAccess)
         {
+            ideaService = new ideaService(databaseAccess);
             this.databaseAccess = databaseAccess;
         }
 
@@ -29,8 +33,9 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("newidea")]
-        public async Task<IActionResult> newidea() {
-            var new_idea = databaseAccess.ideaTable.Where(x=>x.status== "new idea");
+        public async Task<IActionResult> newidea()
+        {
+            var new_idea = databaseAccess.ideaTable.Where(x => x.status == "new idea");
             return Ok(new_idea);
         }
         [HttpGet]
@@ -56,10 +61,11 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("highestlike")]
-        public async Task<IActionResult> highestlike() {
+        public async Task<IActionResult> highestlike()
+        {
             var query = databaseAccess.ideaTable.OrderByDescending(p => p.like).FirstOrDefault();
 
-            return Ok(new { id=query.Id });
+            return Ok(new { id = query.Id });
 
         }
         [HttpPost]
@@ -69,13 +75,13 @@ namespace ITracker.Controllers
             Idea idea = new Idea();
             idea.title = newIdea.Title;
             idea.shortDescription = newIdea.Short_Description;
-            idea.longDescription= newIdea.Long_Description;
-          
-            idea.status = "Idea Proposed";
-            idea.idOfOwner = newIdea.idOfOwner;
-          //  idea.approverId = newIdea.approverId;
+            idea.longDescription = newIdea.Long_Description;
 
-           // idea.Approver= databaseAccess.approversTable.FirstOrDefault(x=>x.id==newIdea.approverId);
+            idea.status = newIdea.Status;
+            idea.idOfOwner = newIdea.idOfOwner;
+            //  idea.approverId = newIdea.approverId;
+
+            // idea.Approver= databaseAccess.approversTable.FirstOrDefault(x=>x.id==newIdea.approverId);
 
             idea.User = databaseAccess.usersTable.FirstOrDefault(x => x.id == newIdea.idOfOwner);
 
@@ -87,11 +93,12 @@ namespace ITracker.Controllers
             return Ok(idea);
         }
         [HttpPut]
-        public async Task<IActionResult> updateidea(Updateidea updateidea) {
+        public async Task<IActionResult> updateidea(Updateidea updateidea)
+        {
             Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == updateidea.Id);
             idea.title = updateidea.title;
-            idea.shortDescription=updateidea.shortDescription;
-            idea.longDescription=updateidea.longDescription;
+            idea.shortDescription = updateidea.shortDescription;
+            idea.longDescription = updateidea.longDescription;
             idea.status = updateidea.status;
             idea.signOff = updateidea.signOff;
             databaseAccess.ideaTable.Update(idea);
@@ -101,12 +108,12 @@ namespace ITracker.Controllers
         }
         [HttpPut]
         [Route("{taskId:int}")]
-        public async Task<IActionResult> updatedate([FromRoute]int taskId)
+        public async Task<IActionResult> updatedate([FromRoute] int taskId)
         {
-            Idea idea =databaseAccess.ideaTable.FirstOrDefault(x=>x.Id==taskId);
-            idea.startDate =   DateTime.Now.ToShortDateString();
+            Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == taskId);
+            idea.startDate = DateTime.Now.ToShortDateString();
             idea.endDate = DateTime.Now.ToShortTimeString();
-         
+
             databaseAccess.ideaTable.Update(idea);
             await databaseAccess.SaveChangesAsync();
             return Ok(idea);

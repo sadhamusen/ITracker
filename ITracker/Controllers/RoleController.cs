@@ -1,8 +1,10 @@
 ﻿using InitiativeTracker.DataBaseConnection;
 using InitiativeTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace ITracker.Controllers
 {
@@ -27,7 +29,7 @@ namespace ITracker.Controllers
         [HttpPost]
         public async Task<ActionResult<Role>> add(Role role)
         {
-             await databaseAccess.rolesTable.AddAsync(role);    
+            await databaseAccess.rolesTable.AddAsync(role);
 
             await databaseAccess.SaveChangesAsync();
 

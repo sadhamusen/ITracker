@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using ITracker.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InitiativesTracker.Controllers
 {
@@ -11,13 +12,14 @@ namespace InitiativesTracker.Controllers
     {
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Approver,User")]
         public string SendMail([FromBody] string[] emailArray)
         {
             using (MailMessage mail = new MailMessage())
             {
                 mail.From = new MailAddress("sadhamusen.it19@bitsathy.ac.in");
                 string[] strArray = emailArray;
-                
+
 
 
 

@@ -2,10 +2,9 @@
 {
     public class Approver
     {
-        public int id {  get; set; }
+        public int id { get; set; }
 
-        public string approverName { get; set; }
-
+        public User? user { get; set; }
 
     }
 }

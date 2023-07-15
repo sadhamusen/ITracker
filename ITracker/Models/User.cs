@@ -8,7 +8,7 @@ namespace InitiativeTracker.Models
 
         public int id { get; set; }
 
-        [Required] 
+        [Required]
         public string userName { get; set; }
 
         [Required]
@@ -17,7 +17,7 @@ namespace InitiativeTracker.Models
         [Required]
         public string password { get; set; }
 
-        [Display(Name ="Role")]
+        [Display(Name = "Role")]
         public int rId { get; set; }
 
         [ForeignKey("UserType")]
