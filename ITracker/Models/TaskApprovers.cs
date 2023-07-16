@@ -23,5 +23,7 @@ namespace ITracker.Models
         public Idea idea { get; set; }
 
         public string status { get; set; }
+
+        public string? feedback { get; set; }
     }
 }

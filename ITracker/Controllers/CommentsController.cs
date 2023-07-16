@@ -25,7 +25,7 @@ namespace ITracker.Controllers
 
             var q = (from c in databaseAccess.commentsTable
                      join b in databaseAccess.ideaTable on c.Taskid equals b.Id
-                     select new { Task_id = c.Taskid, Comments = c.Comment, User = c.user.userName, Role = c.user.Role.type, commentsTime = c.CommentsTimeOnly }).ToList();
+                     select new { Task_id = c.Taskid, Comments = c.Comment, User = c.user.userName, Role = c.user.Role.type, commentsTime = c.CommentsTimeOnly,commentsDate=c.CommentsDateOnly }).ToList();
 
             return Ok(q);
         }
@@ -39,7 +39,8 @@ namespace ITracker.Controllers
             comments.userId = newComments.UserId;
             comments.Taskid = newComments.taskId;
             comments.Comment = newComments.Comment;
-
+            comments.CommentsTimeOnly=  DateTime.Now.ToShortTimeString();
+            comments.CommentsDateOnly = DateTime.Now.ToShortDateString();
             comments.user = databaseAccess.usersTable.Find(newComments.UserId);
 
             comments.Idea = databaseAccess.ideaTable.Find(newComments.taskId);

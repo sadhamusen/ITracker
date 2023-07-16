@@ -18,7 +18,8 @@ namespace ITracker.Services
             return databaseAccess.taskApproversTable.ToList();
 
         }
-        public async Task<ActionResult<TaskApprovers>> getapprover( RequestTaskApprover requestTaskApprover) {
+        public async Task<ActionResult<TaskApprovers>> getapprover(RequestTaskApprover requestTaskApprover)
+        {
             TaskApprovers taskApprovers = new TaskApprovers();
             taskApprovers.approver = await databaseAccess.usersTable.FindAsync(requestTaskApprover.approverId);
             taskApprovers.idea = await databaseAccess.ideaTable.FindAsync(requestTaskApprover.taskId);
@@ -26,6 +27,7 @@ namespace ITracker.Services
             taskApprovers.approverId = requestTaskApprover.approverId;
             taskApprovers.taskId = requestTaskApprover.taskId;
             taskApprovers.status = requestTaskApprover.status;
+            taskApprovers.feedback = requestTaskApprover.feedback;
             // 
 
             Idea idea = await databaseAccess.ideaTable.FindAsync(taskApprovers.taskId);
@@ -42,5 +44,6 @@ namespace ITracker.Services
 
             return taskApprovers;
         }
+
     }
 }

@@ -15,9 +15,11 @@ namespace ITracker.Controllers
     public class TaskApproverController : ControllerBase
     {
         public taskApproverService taskApproverService;
-        public TaskApproverController(DatabaseAccess access)
+        private readonly DatabaseAccess databaseAccess;
+        public TaskApproverController(DatabaseAccess databaseAccess)
         {
-            taskApproverService = new taskApproverService(access);
+            taskApproverService = new taskApproverService(databaseAccess);
+            this.databaseAccess = databaseAccess;
         }
         //private readonly DatabaseAccess databaseAccess;
 
@@ -31,7 +33,20 @@ namespace ITracker.Controllers
         {
             return Ok(await taskApproverService.getAlltask());
         }
-
+        [HttpGet]
+        [Route("approved")]
+        public async Task<IActionResult> getTodo()
+        {
+            var approved = await this.databaseAccess.taskApproversTable.Where(x => x.status.Equals("accepted")).ToListAsync();
+            return Ok(approved);
+        }
+        [HttpGet]
+        [Route("rejected")]
+        public async Task<IActionResult> getrejected()
+        {
+            var approved = await this.databaseAccess.taskApproversTable.Where(x => x.status.Equals("rejected")).ToListAsync();
+            return Ok(approved);
+        }
         [HttpPost]
         public async Task<IActionResult> addApprover(RequestTaskApprover requestTaskApprover)
         {

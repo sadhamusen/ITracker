@@ -27,9 +27,20 @@ namespace ITracker.Controllers
         public async Task<ActionResult<IEnumerable<Idea>>> get()
         {
             var allData = databaseAccess.ideaTable.Where(x => x.isDelete == 0);
-
+            var query = (from c in databaseAccess.ideaTable
+                         join b in databaseAccess.usersTable on
+                         c.approverId equals b.id
+                         join d in databaseAccess.contributorTable on c.Id equals d.id
+                         select new { contributor = d.Name, approvername = b.userName ,title=c.title,shortdescription=c.shortDescription,
+                         longdescription=c.longDescription,status=c.status,like=c.like
+                         }).ToList();
+            //var query= await databaseAccess.ideaTable.ToListAsync();
+            //query.ForEach(x =>
+            //{
+            //    x.contributors = databaseAccess.contributorTable.Where(y => y.idea.Id == x.Id).ToList();
+            //});
             //return await databaseAccess.ideaTable.ToListAsync();
-            return Ok(allData);
+            return Ok(query);
         }
         [HttpGet]
         [Route("newidea")]
@@ -76,7 +87,7 @@ namespace ITracker.Controllers
             idea.title = newIdea.Title;
             idea.shortDescription = newIdea.Short_Description;
             idea.longDescription = newIdea.Long_Description;
-
+            idea.ideaCreatedDate= DateTime.Now.ToShortDateString();
             idea.status = newIdea.Status;
             idea.idOfOwner = newIdea.idOfOwner;
             //  idea.approverId = newIdea.approverId;

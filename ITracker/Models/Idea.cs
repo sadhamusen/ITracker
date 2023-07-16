@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ITracker.Models;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace InitiativeTracker.Models
@@ -25,6 +26,8 @@ namespace InitiativeTracker.Models
 
         public int like { get; set; }
 
+        public string? ideaCreatedDate { get; set; } = DateTime.Now.ToString();
+
         [DisplayName("OwnerId")]
         public int idOfOwner { get; set; }
 
@@ -35,7 +38,7 @@ namespace InitiativeTracker.Models
         [DisplayName("AppId")]
         public int? approverId { get; set; }
 
-
+        public ICollection<Contributor> contributors { get; set; }
 
     }
 }

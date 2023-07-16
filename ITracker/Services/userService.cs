@@ -51,10 +51,9 @@ namespace ITracker.Services
             user.email = newUser.email;
             user.password = passwordHash;
             user.Role = databaseAccess.rolesTable.Find(3);
-
+            user.created_time = DateTime.Now.ToShortDateString();
             user.rId = user.Role.id;
-
-
+        
             databaseAccess.usersTable.AddAsync(user);
 
             user.Role = databaseAccess.rolesTable.Find(3);
