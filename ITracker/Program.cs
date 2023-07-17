@@ -1,5 +1,6 @@
 using InitiativeTracker.DataBaseConnection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ITracker.Services;
 using Microsoft.Extensions.Configuration;
@@ -17,15 +18,29 @@ builder.Services.AddDbContext<DatabaseAccess>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DbConnection")
     ));
 
-var app = builder.Build();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>{
+ options.TokenValidationParameters = new TokenValidationParameters
+{
+ValidateIssuerSigningKey = true,
+     ValidateAudience = false,
+ValidateIssuer = false,
+IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF32.GetBytes(
+    builder.Configuration.GetSection("AppSettings:Token").Value!))
 
+};
+
+});
+
+
+var app = builder.Build();
+app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseAuthentication();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

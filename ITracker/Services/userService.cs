@@ -61,75 +61,19 @@ namespace ITracker.Services
             await databaseAccess.SaveChangesAsync();
             return (user);
         }
-        public async Task<ActionResult<User>> authuser(AuthUser authUser)
-        {
 
-            User user = new User();
-            string msg = "user not Found";
-            var userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(authUser.email));
-            if (userSearch == null)
-            {
-                user.email = "user not found";
-                return user;
-            }
-            User user1 = databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(authUser.email));
-            var ans = user1.password;
-            var answer = BCrypt.Net.BCrypt.Verify(authUser.password, ans);
-            userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(authUser.email) && answer);
-
-            if (userSearch != null)
-            {
-                string token = createtoken(user1);
-                user.Role = databaseAccess.rolesTable.Find(3);
-
-                return user;
-            }
-            user.email = "User and Password combo is wrong";
-            return user;
-        }
-        private string createtoken(User user)
-        {
-            var a = user.email;
-            List<Claim> claims = new List<Claim> {
-                    new Claim(ClaimTypes.Name,user.email)
-                };
-
-
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("Appsettings:Token").Value!));
-
-
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-
-
-            var token = new JwtSecurityToken(
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(2),
-                    signingCredentials: creds
-                );
-
-
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-
-
-            return jwt;
-        }
+        
         public async Task<ActionResult<User>> update(EditUser editUser)
         {
             User user = databaseAccess.usersTable.FirstOrDefault(x => x.id.Equals(editUser.id));
             user.Role = databaseAccess.rolesTable.Find(editUser.rId);
             user.rId = user.Role.id;
-
             databaseAccess.usersTable.Update(user);
             await databaseAccess.SaveChangesAsync();
 
 
             return user;
         }
+ 
     }
 }

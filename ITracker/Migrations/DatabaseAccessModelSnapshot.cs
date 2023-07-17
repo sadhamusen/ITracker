@@ -221,6 +221,9 @@ namespace ITracker.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
+                    b.Property<string>("JWT")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("UserType")
                         .HasColumnType("int");
 

@@ -1,5 +1,6 @@
 ﻿using InitiativeTracker.DataBaseConnection;
 using InitiativeTracker.Models;
+using ITracker.Models;
 using ITracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,8 +32,8 @@ namespace ITracker.Controllers
                          join b in databaseAccess.usersTable on
                          c.approverId equals b.id
                          join d in databaseAccess.contributorTable on c.Id equals d.id
-                         select new { contributor = d.Name, approvername = b.userName ,title=c.title,shortdescription=c.shortDescription,
-                         longdescription=c.longDescription,status=c.status,like=c.like
+                         select new { contributor = d.Name, approvername = b.userName, title = c.title, shortdescription = c.shortDescription,
+                             longdescription = c.longDescription, status = c.status, like = c.like
                          }).ToList();
             //var query= await databaseAccess.ideaTable.ToListAsync();
             //query.ForEach(x =>
@@ -40,7 +41,25 @@ namespace ITracker.Controllers
             //    x.contributors = databaseAccess.contributorTable.Where(y => y.idea.Id == x.Id).ToList();
             //});
             //return await databaseAccess.ideaTable.ToListAsync();
-            return Ok(query);
+
+            var result= await databaseAccess.ideaTable.Include(u=>u.User).Include(u=>u.contributors).ToListAsync();
+            return Ok(result.Select(x => new
+            {
+                Id=x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff=x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z=>z.idea.Id==x.Id).Select (y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            })) ;
         }
         [HttpGet]
         [Route("newidea")]
@@ -103,7 +122,7 @@ namespace ITracker.Controllers
             idea.title = newIdea.Title;
             idea.shortDescription = newIdea.Short_Description;
             idea.longDescription = newIdea.Long_Description;
-            idea.ideaCreatedDate= DateTime.Now.ToShortDateString();
+            idea.ideaCreatedDate = DateTime.Now.ToShortDateString();
             idea.status = newIdea.Status;
             idea.idOfOwner = newIdea.idOfOwner;
             //  idea.approverId = newIdea.approverId;
@@ -133,18 +152,18 @@ namespace ITracker.Controllers
             return Ok(idea);
 
         }
-        [HttpPut]
-        [Route("{taskId:int}")]
-        public async Task<IActionResult> updatedate([FromRoute] int taskId)
-        {
-            Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == taskId);
-            idea.startDate = DateTime.Now.ToShortDateString();
-            idea.endDate = DateTime.Now.ToShortTimeString();
+        //[HttpPut]
+        //[Route("{taskId:int}")]
+        //public async Task<IActionResult> updatedate([FromRoute] int taskId)
+        //{
+        //    Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == taskId);
+        //    idea.startDate = DateTime.Now.ToShortDateString();
+        //    idea.endDate = DateTime.Now.ToShortTimeString();
 
-            databaseAccess.ideaTable.Update(idea);
-            await databaseAccess.SaveChangesAsync();
-            return Ok(idea);
-        }
+        //    databaseAccess.ideaTable.Update(idea);
+        //    await databaseAccess.SaveChangesAsync();
+        //    return Ok(idea);
+        //}
         [HttpPut]
         [Route("like/{liketaskId:int}")]
         public async Task<IActionResult> like([FromRoute] int liketaskId)
@@ -165,7 +184,7 @@ namespace ITracker.Controllers
             await databaseAccess.SaveChangesAsync();
             return Ok(idea);
         }
-
+       
 
     }
 }

@@ -55,5 +55,28 @@ namespace ITracker.Controllers
             return Ok(task.Value);
 
         }
+        [HttpPut("TaskApproved")]
+        public async Task<IActionResult> changeStatus(RequestTaskApprover requestTaskApprover)
+        {
+            TaskApprovers taskApprovers = await databaseAccess.taskApproversTable.FirstOrDefaultAsync(x=>x.idea.Id==requestTaskApprover.taskId);
+
+            var query = databaseAccess.taskApproversTable.Select(x => x.idea.Id).ToList();
+            
+
+            taskApprovers.status = requestTaskApprover.status;
+            taskApprovers.feedback = requestTaskApprover.feedback;
+
+            Idea idea = await databaseAccess.ideaTable.FirstOrDefaultAsync(x => x.Id == requestTaskApprover.taskId);
+            idea.signOff= DateTime.Now.ToShortDateString();
+            idea.endDate=DateTime.Now.ToShortDateString();
+            idea.status= requestTaskApprover.status;    
+
+             databaseAccess.taskApproversTable.Update(taskApprovers);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(taskApprovers);
+
+            
+        }
+
     }
 }

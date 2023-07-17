@@ -35,6 +35,10 @@ namespace ITracker.Services
 
             idea.approverId = requestTaskApprover.approverId;
 
+            if (taskApprovers.status == "approved") { idea.endDate = DateTime.Now.ToShortDateString(); }
+
+            if (taskApprovers.status == "accepted") { idea.startDate= DateTime.Now.ToShortDateString(); }
+
 
             await databaseAccess.taskApproversTable.AddAsync(taskApprovers);
 

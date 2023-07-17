@@ -38,7 +38,7 @@ namespace InitiativeTracker.Models
         [DisplayName("AppId")]
         public int? approverId { get; set; }
 
-        public ICollection<Contributor> contributors { get; set; }
+        public virtual ICollection<Contributor> ? contributors { get; set; }
 
     }
 }

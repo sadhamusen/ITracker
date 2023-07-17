@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITracker.Migrations
 {
     [DbContext(typeof(DatabaseAccess))]
-    [Migration("20230715032944_initial")]
-    partial class initial
+    [Migration("20230717050414_final")]
+    partial class final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,6 +67,13 @@ namespace ITracker.Migrations
                     b.Property<int>("approverId")
                         .HasColumnType("int");
 
+                    b.Property<string>("feedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("taskId")
                         .HasColumnType("int");
 
@@ -87,11 +94,12 @@ namespace ITracker.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("approverName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("userid")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
+
+                    b.HasIndex("userid");
 
                     b.ToTable("approversTable");
                 });
@@ -146,9 +154,6 @@ namespace ITracker.Migrations
                     b.Property<int?>("IdOFUser")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IdOfApprover")
-                        .HasColumnType("int");
-
                     b.Property<int?>("approverId")
                         .HasColumnType("int");
 
@@ -157,6 +162,9 @@ namespace ITracker.Migrations
 
                     b.Property<int>("idOfOwner")
                         .HasColumnType("int");
+
+                    b.Property<string>("ideaCreatedDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("isDelete")
                         .HasColumnType("int");
@@ -187,8 +195,6 @@ namespace ITracker.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdOFUser");
-
-                    b.HasIndex("IdOfApprover");
 
                     b.ToTable("ideaTable");
                 });
@@ -221,8 +227,32 @@ namespace ITracker.Migrations
                     b.Property<int?>("UserType")
                         .HasColumnType("int");
 
+                    b.Property<string>("bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("blood_grop")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("created_time")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("dob")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("email")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("instagram")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("linkedin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("mobile_number")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("password")
@@ -231,6 +261,12 @@ namespace ITracker.Migrations
 
                     b.Property<int>("rId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("secondary_email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("userName")
                         .IsRequired()
@@ -246,7 +282,7 @@ namespace ITracker.Migrations
             modelBuilder.Entity("ITracker.Models.Contributor", b =>
                 {
                     b.HasOne("InitiativeTracker.Models.Idea", "idea")
-                        .WithMany()
+                        .WithMany("contributors")
                         .HasForeignKey("ideaId");
 
                     b.Navigation("idea");
@@ -254,7 +290,7 @@ namespace ITracker.Migrations
 
             modelBuilder.Entity("ITracker.Models.TaskApprovers", b =>
                 {
-                    b.HasOne("InitiativeTracker.Models.Approver", "Approver")
+                    b.HasOne("InitiativeTracker.Models.User", "approver")
                         .WithMany()
                         .HasForeignKey("IdOfApprover")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -266,9 +302,18 @@ namespace ITracker.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Approver");
+                    b.Navigation("approver");
 
                     b.Navigation("idea");
+                });
+
+            modelBuilder.Entity("InitiativeTracker.Models.Approver", b =>
+                {
+                    b.HasOne("InitiativeTracker.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("userid");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("InitiativeTracker.Models.Comments", b =>
@@ -296,12 +341,6 @@ namespace ITracker.Migrations
                         .WithMany()
                         .HasForeignKey("IdOFUser");
 
-                    b.HasOne("InitiativeTracker.Models.Approver", "Approver")
-                        .WithMany()
-                        .HasForeignKey("IdOfApprover");
-
-                    b.Navigation("Approver");
-
                     b.Navigation("User");
                 });
 
@@ -312,6 +351,11 @@ namespace ITracker.Migrations
                         .HasForeignKey("UserType");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("InitiativeTracker.Models.Idea", b =>
+                {
+                    b.Navigation("contributors");
                 });
 #pragma warning restore 612, 618
         }

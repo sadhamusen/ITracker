@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITracker.Migrations
 {
     [DbContext(typeof(DatabaseAccess))]
-    [Migration("20230715181126_initial1")]
-    partial class initial1
+    [Migration("20230717113237_final1")]
+    partial class final1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,6 +66,9 @@ namespace ITracker.Migrations
 
                     b.Property<int>("approverId")
                         .HasColumnType("int");
+
+                    b.Property<string>("feedback")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("status")
                         .IsRequired()
@@ -160,6 +163,9 @@ namespace ITracker.Migrations
                     b.Property<int>("idOfOwner")
                         .HasColumnType("int");
 
+                    b.Property<string>("ideaCreatedDate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("isDelete")
                         .HasColumnType("int");
 
@@ -218,11 +224,38 @@ namespace ITracker.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
+                    b.Property<string>("JWT")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("UserType")
                         .HasColumnType("int");
 
+                    b.Property<string>("bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("blood_grop")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("created_time")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("dob")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("email")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("instagram")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("linkedin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("mobile_number")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("password")
@@ -231,6 +264,12 @@ namespace ITracker.Migrations
 
                     b.Property<int>("rId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("secondary_email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("userName")
                         .IsRequired()
@@ -246,7 +285,7 @@ namespace ITracker.Migrations
             modelBuilder.Entity("ITracker.Models.Contributor", b =>
                 {
                     b.HasOne("InitiativeTracker.Models.Idea", "idea")
-                        .WithMany()
+                        .WithMany("contributors")
                         .HasForeignKey("ideaId");
 
                     b.Navigation("idea");
@@ -315,6 +354,11 @@ namespace ITracker.Migrations
                         .HasForeignKey("UserType");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("InitiativeTracker.Models.Idea", b =>
+                {
+                    b.Navigation("contributors");
                 });
 #pragma warning restore 612, 618
         }

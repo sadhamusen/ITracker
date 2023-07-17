@@ -5,24 +5,11 @@
 namespace ITracker.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class final : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "approversTable",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    approverName = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_approversTable", x => x.id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "rolesTable",
                 columns: table => new
@@ -45,6 +32,16 @@ namespace ITracker.Migrations
                     userName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    secondary_email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    dob = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    mobile_number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    blood_grop = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    linkedin = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    instagram = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    rating = table.Column<int>(type: "int", nullable: true),
+                    bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    created_time = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     rId = table.Column<int>(type: "int", nullable: false),
                     UserType = table.Column<int>(type: "int", nullable: true)
                 },
@@ -55,6 +52,24 @@ namespace ITracker.Migrations
                         name: "FK_usersTable_rolesTable_UserType",
                         column: x => x.UserType,
                         principalTable: "rolesTable",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "approversTable",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    userid = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_approversTable", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_approversTable_usersTable_userid",
+                        column: x => x.userid,
+                        principalTable: "usersTable",
                         principalColumn: "id");
                 });
 
@@ -73,19 +88,14 @@ namespace ITracker.Migrations
                     signOff = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     isDelete = table.Column<int>(type: "int", nullable: false),
                     like = table.Column<int>(type: "int", nullable: false),
+                    ideaCreatedDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     idOfOwner = table.Column<int>(type: "int", nullable: false),
                     IdOFUser = table.Column<int>(type: "int", nullable: true),
-                    approverId = table.Column<int>(type: "int", nullable: true),
-                    IdOfApprover = table.Column<int>(type: "int", nullable: true)
+                    approverId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ideaTable", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ideaTable_approversTable_IdOfApprover",
-                        column: x => x.IdOfApprover,
-                        principalTable: "approversTable",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_ideaTable_usersTable_IdOFUser",
                         column: x => x.IdOFUser,
@@ -153,24 +163,31 @@ namespace ITracker.Migrations
                     approverId = table.Column<int>(type: "int", nullable: false),
                     IdOfApprover = table.Column<int>(type: "int", nullable: false),
                     taskId = table.Column<int>(type: "int", nullable: false),
-                    IdOfTask = table.Column<int>(type: "int", nullable: false)
+                    IdOfTask = table.Column<int>(type: "int", nullable: false),
+                    status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    feedback = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_taskApproversTable", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_taskApproversTable_approversTable_IdOfApprover",
-                        column: x => x.IdOfApprover,
-                        principalTable: "approversTable",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_taskApproversTable_ideaTable_IdOfTask",
                         column: x => x.IdOfTask,
                         principalTable: "ideaTable",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_taskApproversTable_usersTable_IdOfApprover",
+                        column: x => x.IdOfApprover,
+                        principalTable: "usersTable",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_approversTable_userid",
+                table: "approversTable",
+                column: "userid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_commentsTable_IdOfIdea",
@@ -186,11 +203,6 @@ namespace ITracker.Migrations
                 name: "IX_contributorTable_ideaId",
                 table: "contributorTable",
                 column: "ideaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ideaTable_IdOfApprover",
-                table: "ideaTable",
-                column: "IdOfApprover");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ideaTable_IdOFUser",
@@ -217,6 +229,9 @@ namespace ITracker.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "approversTable");
+
+            migrationBuilder.DropTable(
                 name: "commentsTable");
 
             migrationBuilder.DropTable(
@@ -227,9 +242,6 @@ namespace ITracker.Migrations
 
             migrationBuilder.DropTable(
                 name: "ideaTable");
-
-            migrationBuilder.DropTable(
-                name: "approversTable");
 
             migrationBuilder.DropTable(
                 name: "usersTable");
