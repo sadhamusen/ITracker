@@ -30,15 +30,15 @@ namespace ITracker.Services
         }
         public async Task<ActionResult<User>> postuser(NewUser newUser)
         {
-
+            User user = new User();
             var Emailcheck = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email));
             if (Emailcheck != null)
             {
-
-                return null;
+                user.userName = "0";
+                return user;
             }
             var Usercheck = this.databaseAccess.usersTable.FirstOrDefault(x => x.userName.Equals(newUser.userName));
-            User user = new User();
+
             if (Usercheck != null)
             {
                 user.userName = "-1";
@@ -61,21 +61,21 @@ namespace ITracker.Services
             await databaseAccess.SaveChangesAsync();
             return (user);
         }
-        public async Task<ActionResult<User>> authuser(NewUser newUser)
+        public async Task<ActionResult<User>> authuser(AuthUser authUser)
         {
 
             User user = new User();
             string msg = "user not Found";
-            var userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email));
+            var userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(authUser.email));
             if (userSearch == null)
             {
-                user.email = "usernotfound";
+                user.email = "user not found";
                 return user;
             }
-            User user1 = databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email));
+            User user1 = databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(authUser.email));
             var ans = user1.password;
-            var answer = BCrypt.Net.BCrypt.Verify(newUser.password, ans);
-            userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(newUser.email) && answer);
+            var answer = BCrypt.Net.BCrypt.Verify(authUser.password, ans);
+            userSearch = this.databaseAccess.usersTable.FirstOrDefault(x => x.email.Equals(authUser.email) && answer);
 
             if (userSearch != null)
             {
@@ -84,7 +84,7 @@ namespace ITracker.Services
 
                 return user;
             }
-            user.email = "UserandPasswordcomboiswrong";
+            user.email = "User and Password combo is wrong";
             return user;
         }
         private string createtoken(User user)

@@ -16,9 +16,11 @@ namespace ITracker.Controllers
     {
         // private readonly DatabaseAccess databaseAccess;
         public userService userService;
-        public UserController(DatabaseAccess access, IConfiguration configuration)
+        public readonly DatabaseAccess databaseAccess;
+        public UserController(DatabaseAccess databaseAccess, IConfiguration configuration)
         {
-            userService = new userService(access, configuration);
+            userService = new userService(databaseAccess, configuration);
+            this.databaseAccess = databaseAccess;
         }
 
         [HttpGet]
@@ -31,17 +33,35 @@ namespace ITracker.Controllers
         public async Task<ActionResult> add(NewUser newUser)
         {
             var user = await userService.postuser(newUser);
+            if (user.Value.userName.Equals("0")){
+                return BadRequest("Email id already exist");
+            }
+            if (user.Value.userName.Equals("-1"))
+            {
+                return BadRequest("username already taken");
+            }
             return Ok(user);
         }
         [HttpPost]
         [Route("/auth")]
 
-        public async Task<ActionResult<User>> UserAuth(NewUser newUser)
+        public async Task<ActionResult<User>> UserAuth(AuthUser authUser)
         {
             // Find the value by the id of the customer.
-            var user = await userService.authuser(newUser);
+            var user = await userService.authuser(authUser);
+            if (user.Value.email == ("user not found")){
+               return  BadRequest("user not Found");
+            }
+            if (user.Value.email == ("User and Password combo is wrong"))
+            {
+                return BadRequest("User and Password combo is wrong");
+            }
+            var query = (from c in this.databaseAccess.usersTable
+                         join d in this.databaseAccess.rolesTable on c.rId equals d.id
+                         where c.email == authUser.email
+                         select new { id = c.id, email = c.email, role = d.type }).ToList();
 
-            return Ok(user.Value.Role);
+            return Ok(query);
         }
 
         [HttpPut]

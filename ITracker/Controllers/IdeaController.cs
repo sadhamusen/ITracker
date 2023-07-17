@@ -71,12 +71,28 @@ namespace ITracker.Controllers
             return Ok(inreview);
         }
         [HttpGet]
+        [Route("done")]
+        public async Task<IActionResult> donw()
+        {
+            var inreview = databaseAccess.ideaTable.Where(x => x.status == "Done");
+            return Ok(inreview);
+        }
+        [HttpGet]
         [Route("highestlike")]
         public async Task<IActionResult> highestlike()
         {
             var query = databaseAccess.ideaTable.OrderByDescending(p => p.like).FirstOrDefault();
 
             return Ok(new { id = query.Id });
+
+        }
+        [HttpGet]
+        [Route("{taskid}")]
+        public async Task<IActionResult> gettaskbyid([FromRoute] int taskid)
+        {
+            var query = databaseAccess.ideaTable.FirstOrDefault(x => x.Id.Equals(taskid));
+
+            return Ok(query);
 
         }
         [HttpPost]
