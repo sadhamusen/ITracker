@@ -32,9 +32,12 @@ namespace ITracker.Services
 
             Idea idea = await databaseAccess.ideaTable.FindAsync(taskApprovers.taskId);
 
-
+            if (idea.idOfOwner==requestTaskApprover.approverId) {
+                taskApprovers.status = "user idea and approver can't be same";
+                return taskApprovers;
+            }
             idea.approverId = requestTaskApprover.approverId;
-
+            idea.startDate=DateTime.Now.ToShortDateString();
             if (taskApprovers.status == "approved") { idea.endDate = DateTime.Now.ToShortDateString(); }
 
             if (taskApprovers.status == "accepted") { idea.startDate= DateTime.Now.ToShortDateString(); }

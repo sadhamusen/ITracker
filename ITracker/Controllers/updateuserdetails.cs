@@ -1,7 +1,7 @@
 ﻿namespace ITracker.Controllers
 {
     public class updateuserdetails
-    {   public int id { get; set; }
+    { 
         public string? secondary_email { get; set; }
         public string? dob { get; set; }
         public string? mobile_number { get; set; }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ITracker.Migrations
 {
     [DbContext(typeof(DatabaseAccess))]
-    [Migration("20230717113237_final1")]
-    partial class final1
+    [Migration("20230718082300_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,10 @@ namespace ITracker.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ideaId")
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ideaId")
                         .HasColumnType("int");
 
                     b.Property<int>("taskId")
@@ -284,11 +287,11 @@ namespace ITracker.Migrations
 
             modelBuilder.Entity("ITracker.Models.Contributor", b =>
                 {
-                    b.HasOne("InitiativeTracker.Models.Idea", "idea")
+                    b.HasOne("InitiativeTracker.Models.Idea", null)
                         .WithMany("contributors")
-                        .HasForeignKey("ideaId");
-
-                    b.Navigation("idea");
+                        .HasForeignKey("ideaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ITracker.Models.TaskApprovers", b =>

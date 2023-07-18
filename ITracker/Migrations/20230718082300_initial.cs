@@ -5,7 +5,7 @@
 namespace ITracker.Migrations
 {
     /// <inheritdoc />
-    public partial class final : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,6 +32,7 @@ namespace ITracker.Migrations
                     userName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JWT = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     secondary_email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     dob = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     mobile_number = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -141,8 +142,9 @@ namespace ITracker.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     taskId = table.Column<int>(type: "int", nullable: false),
-                    ideaId = table.Column<int>(type: "int", nullable: true)
+                    ideaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -151,7 +153,8 @@ namespace ITracker.Migrations
                         name: "FK_contributorTable_ideaTable_ideaId",
                         column: x => x.ideaId,
                         principalTable: "ideaTable",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

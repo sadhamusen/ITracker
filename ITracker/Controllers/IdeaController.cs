@@ -55,7 +55,7 @@ namespace ITracker.Controllers
                 signoff=x.signOff,
                 CreatedTime = x.ideaCreatedDate,
 
-                Contributor = x.contributors.Where(z=>z.idea.Id==x.Id).Select (y => new
+                Contributor = x.contributors.Where(z=>z.ideaId==x.Id).Select (y => new
                 {
                     Name = y.Name,
                 }).ToList()
@@ -109,7 +109,7 @@ namespace ITracker.Controllers
         [Route("{taskid}")]
         public async Task<IActionResult> gettaskbyid([FromRoute] int taskid)
         {
-            var query = databaseAccess.ideaTable.FirstOrDefault(x => x.Id.Equals(taskid));
+            var query = databaseAccess.ideaTable.Include(x=>x.contributors).FirstOrDefault(x => x.Id.Equals(taskid));
 
             return Ok(query);
 
@@ -131,7 +131,26 @@ namespace ITracker.Controllers
 
             idea.User = databaseAccess.usersTable.FirstOrDefault(x => x.id == newIdea.idOfOwner);
 
+
             await databaseAccess.ideaTable.AddAsync(idea);
+            if (newIdea.IdOfContributors.Count!=0)
+            {
+                foreach (var id in newIdea.IdOfContributors) {
+                    Contributor contributor = new Contributor();
+                    User user = await databaseAccess.usersTable.FindAsync(id);
+                    contributor.UserId = user.id;
+                    contributor.Name = user.userName;
+                    contributor.taskId = 100;
+
+                    idea.contributors.Add(contributor);
+
+                    await databaseAccess.contributorTable.AddAsync(contributor);
+
+                    
+                }
+            }
+
+           
 
             await databaseAccess.SaveChangesAsync();
 
@@ -184,7 +203,13 @@ namespace ITracker.Controllers
             await databaseAccess.SaveChangesAsync();
             return Ok(idea);
         }
-       
 
+        [HttpGet]
+        [Route("get/{getuserstask}")]
+        public async Task<ActionResult> gettaskofuser([FromRoute]int getuserstask) {
+            Idea idea = new Idea();
+            var query = databaseAccess.ideaTable.Include(x=>x.contributors).Where(x => x.idOfOwner == getuserstask);
+            return Ok(query);
+        }
     }
 }

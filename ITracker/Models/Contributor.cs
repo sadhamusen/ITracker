@@ -9,10 +9,12 @@ namespace ITracker.Models
         public int id { get; set; }
         public string Name { get; set; }
 
+        public int UserId { get; set; }
+
         [Display(Name = "TaskId")]
         public int taskId { get; set; }
 
         [ForeignKey("ideaId")]
-        public Idea? idea { get; set; }
+        public int  ideaId { get; set; }
     }
 }

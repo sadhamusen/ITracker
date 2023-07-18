@@ -1,4 +1,6 @@
-﻿namespace ITracker.Controllers
+﻿using ITracker.Models;
+
+namespace ITracker.Controllers
 {
     public class NewIdea
     {
@@ -9,6 +11,8 @@
         public string Status { get; set; }
         public int idOfOwner { get; set; }
 
+       public  List<int> IdOfContributors { get; set; }
+        
 
 
     }

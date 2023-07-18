@@ -52,6 +52,10 @@ namespace ITracker.Controllers
         {
 
             var task = await taskApproverService.getapprover(requestTaskApprover);
+            if (task.Value.status == "user idea and approver can't be same")
+            {
+                return BadRequest("idea posted and idea approved person can't be same");
+            }
             return Ok(task.Value);
 
         }

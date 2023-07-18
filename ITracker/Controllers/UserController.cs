@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,27 +112,46 @@ namespace ITracker.Controllers
 
         }
 
-        [HttpPost]
-        [Route("updatedetails")]
-        public async Task<ActionResult<User>> updateuserdetails(updateuserdetails updateuserdetails) {
+        [HttpPut]
+        [Route("updatedetails/{id:int}")]
+        public async Task<ActionResult<User>> updateuserdetails([FromRoute] int id, updateuserdetails updateuserdetails)
+        {
+            if (updateuserdetails != null)
+            {
+          User user = databaseAccess.usersTable.FirstOrDefault(x => x.id.Equals(id));
+                if (user != null)
+                {
+                    user.secondary_email = updateuserdetails.secondary_email;
+                    user.dob = updateuserdetails.dob;
+                    user.bio = updateuserdetails.bio;
+                    user.mobile_number = updateuserdetails.mobile_number;
+                    user.image = updateuserdetails.image;
+                    user.linkedin = updateuserdetails.linkedin;
+                    user.instagram = updateuserdetails.instagram;
+                    user.blood_grop = updateuserdetails.blood_grop;
+                    databaseAccess.usersTable.Update(user);
+                    await databaseAccess.SaveChangesAsync();
 
-            User user = databaseAccess.usersTable.FirstOrDefault(x => x.id.Equals(updateuserdetails.id));
-            user.secondary_email = updateuserdetails.secondary_email;
-            user.dob = updateuserdetails.dob;
-            user.bio = updateuserdetails.bio;
-            user.mobile_number = updateuserdetails.mobile_number;
-            user.image = updateuserdetails.image;
-            user.linkedin = updateuserdetails.linkedin;
-            user.instagram = updateuserdetails.instagram;
-            user.blood_grop = updateuserdetails.blood_grop;
+                }
 
-            databaseAccess.usersTable.Update(user);
-            await databaseAccess.SaveChangesAsync();
-            return user;
+                return user;
+
+            }
+            else
+            {
+
+                return BadRequest("Not Available");
+
+            }
+
         }
 
-
-
+        [HttpGet]
+        [Route("{userid}")]
+        public async Task<ActionResult<User>> getuserdetails([FromRoute] int userid) {
+            User user = await databaseAccess.usersTable.FirstOrDefaultAsync(x => x.id == userid);
+            return user;
+        }
     }
 
 }
