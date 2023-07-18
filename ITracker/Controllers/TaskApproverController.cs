@@ -37,14 +37,14 @@ namespace ITracker.Controllers
         [Route("approved")]
         public async Task<IActionResult> getTodo()
         {
-            var approved = await this.databaseAccess.taskApproversTable.Where(x => x.status.Equals("accepted")).ToListAsync();
+            var approved = await this.databaseAccess.taskApproversTable.Where(x => x.status.Equals("Accepted")).ToListAsync();
             return Ok(approved);
         }
         [HttpGet]
         [Route("rejected")]
         public async Task<IActionResult> getrejected()
         {
-            var approved = await this.databaseAccess.taskApproversTable.Where(x => x.status.Equals("rejected")).ToListAsync();
+            var approved = await this.databaseAccess.taskApproversTable.Where(x => x.status.Equals("Rejected")).ToListAsync();
             return Ok(approved);
         }
         [HttpPost]

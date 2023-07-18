@@ -65,14 +65,14 @@ namespace ITracker.Controllers
         [Route("newidea")]
         public async Task<IActionResult> newidea()
         {
-            var new_idea = databaseAccess.ideaTable.Where(x => x.status == "new idea");
+            var new_idea = databaseAccess.ideaTable.Where(x => x.status == "New Idea");
             return Ok(new_idea);
         }
         [HttpGet]
         [Route("todo")]
         public async Task<IActionResult> getTodo()
         {
-            var todo = databaseAccess.ideaTable.Where(x => x.status == "To do");
+            var todo = databaseAccess.ideaTable.Where(x => x.status == "Todo");
             return Ok(todo);
         }
         [HttpGet]
@@ -211,9 +211,28 @@ namespace ITracker.Controllers
         [HttpGet]
         [Route("get/{getuserstask}")]
         public async Task<ActionResult> gettaskofuser([FromRoute]int getuserstask) {
-            Idea idea = new Idea();
-            var query = databaseAccess.ideaTable.Include(x=>x.contributors).Where(x => x.idOfOwner == getuserstask);
-            return Ok(query);
+            //Idea idea = new Idea();
+            //var query = databaseAccess.ideaTable.Include(x=>x.contributors).Where(x => x.idOfOwner == getuserstask);
+            //return Ok(query);
+
+            var result = await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.idOfOwner == getuserstask).ToListAsync();
+            return Ok(result.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff = x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z => z.ideaId == x.Id).Select(y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            }));
         }
         [HttpGet]
         [Route("Numberofpost")]
@@ -225,10 +244,36 @@ namespace ITracker.Controllers
                 {
                     Id = x.First().Id,
                     title=x.First().title,
-                    Count=x.Sum(s=>s.Id)-1,
+                    Count=x.ToList().Count()
 
                 });
-            return Ok(new { noofpost = idea,groupby=GroupedTags });
+            var newidea = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("New Idea")).GroupBy(c => c.Id)
+                .Select(x => new
+                {
+                    count=x.ToList().Count()
+                });
+            var todo = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Todo")).GroupBy(c => c.Id)
+               .Select(x => new
+               {
+                   count = x.ToList().Count()
+               });
+            var Inprogress = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Inprogress")).GroupBy(c => c.Id)
+                .Select(x => new
+                {
+                    count = x.ToList().Count()
+                });
+            var Inreview = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Inreview")).GroupBy(c => c.Id)
+                .Select(x => new
+                {
+                    count = x.ToList().Count()
+                });
+
+            var Done = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Done")).GroupBy(c => c.Id)
+                .Select(x => new
+                {
+                    count = x.ToList().Count()
+                });
+            return Ok(new { noofpost = idea,groupby=GroupedTags,newidea=newidea,todo=todo,inprogress=Inprogress,inreview= Inreview,done=Done });
         }
     }
 }
