@@ -102,7 +102,7 @@ namespace ITracker.Controllers
         {
             var query = databaseAccess.ideaTable.OrderByDescending(p => p.like).FirstOrDefault();
 
-            return Ok(new { id = query.Id });
+            return Ok(new { id = query.Id,title=query.title,owner=query.User });
 
         }
         [HttpGet]
@@ -133,7 +133,11 @@ namespace ITracker.Controllers
 
 
             await databaseAccess.ideaTable.AddAsync(idea);
-            if (newIdea.IdOfContributors.Count!=0)
+            if(newIdea.IdOfContributors.Count() ==1&& newIdea.IdOfContributors.IndexOf(0)==0)
+            {
+
+            }
+            else if (newIdea.IdOfContributors.Count()!=0)
             {
                 foreach (var id in newIdea.IdOfContributors) {
                     Contributor contributor = new Contributor();
@@ -210,6 +214,21 @@ namespace ITracker.Controllers
             Idea idea = new Idea();
             var query = databaseAccess.ideaTable.Include(x=>x.contributors).Where(x => x.idOfOwner == getuserstask);
             return Ok(query);
+        }
+        [HttpGet]
+        [Route("Numberofpost")]
+        public async Task<ActionResult> Numberofpost() {
+            var idea = databaseAccess.ideaTable.Where(x => x.isDelete == 0).Count();
+            var query = databaseAccess.usersTable.OrderByDescending(p => p.rating).FirstOrDefault();
+            var GroupedTags = databaseAccess.ideaTable.Where(x=>x.isDelete==0).GroupBy(c => c.idOfOwner)
+                .Select(x=>new
+                {
+                    Id = x.First().Id,
+                    title=x.First().title,
+                    Count=x.Sum(s=>s.Id)-1,
+
+                });
+            return Ok(new { noofpost = idea,groupby=GroupedTags });
         }
     }
 }
