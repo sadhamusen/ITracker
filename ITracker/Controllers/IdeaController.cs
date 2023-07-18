@@ -180,9 +180,14 @@ namespace ITracker.Controllers
         [Route("highestlike")]
         public async Task<IActionResult> highestlike()
         {
-            var query = databaseAccess.ideaTable.OrderByDescending(p => p.like).FirstOrDefault();
+            var query = databaseAccess.ideaTable.Include(x => x.User).OrderByDescending(p => p.like).Select(x => 
+            new {
+                id = x.Id,
+                title = x.title,
+                owner = x.User
+            }).FirstOrDefault();
 
-            return Ok(new { id = query.Id,title=query.title,owner=query.User });
+            return Ok(query);
 
         }
         [HttpGet]
