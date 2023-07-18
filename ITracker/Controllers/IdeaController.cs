@@ -42,7 +42,7 @@ namespace ITracker.Controllers
             //});
             //return await databaseAccess.ideaTable.ToListAsync();
 
-            var result= await databaseAccess.ideaTable.Include(u=>u.User).Include(u=>u.contributors).ToListAsync();
+            var result= await databaseAccess.ideaTable.Include(u=>u.User).Include(u=>u.contributors).Where(x => x.isDelete == 0).ToListAsync();
             return Ok(result.Select(x => new
             {
                 Id=x.Id,
