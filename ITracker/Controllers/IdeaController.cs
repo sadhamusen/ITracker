@@ -65,36 +65,116 @@ namespace ITracker.Controllers
         [Route("newidea")]
         public async Task<IActionResult> newidea()
         {
-            var new_idea = databaseAccess.ideaTable.Where(x => x.status == "New Idea");
-            return Ok(new_idea);
+            var new_idea = await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "New Idea").ToListAsync();
+            return Ok(new_idea.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff = x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z => z.ideaId == x.Id).Select(y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            }));
         }
         [HttpGet]
         [Route("todo")]
         public async Task<IActionResult> getTodo()
         {
-            var todo = databaseAccess.ideaTable.Where(x => x.status == "To Do");
-            return Ok(todo);
+            var todo = await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 &&  x.status == "To Do").ToListAsync();
+            return Ok(todo.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff = x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z => z.ideaId == x.Id).Select(y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            }));
         }
         [HttpGet]
         [Route("inprogess")]
         public async Task<IActionResult> inprogress()
         {
-            var inprogress = databaseAccess.ideaTable.Where(x => x.status == "In Progress");
-            return Ok(inprogress);
+            var inprogress =await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "In Progress").ToListAsync();
+            return Ok(inprogress.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff = x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z => z.ideaId == x.Id).Select(y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            }));
         }
         [HttpGet]
         [Route("inreview")]
         public async Task<IActionResult> inreview()
         {
-            var inreview = databaseAccess.ideaTable.Where(x => x.status == "In Review");
-            return Ok(inreview);
+            var inreview =await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "In Review").ToListAsync();
+            return Ok(inreview.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff = x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z => z.ideaId == x.Id).Select(y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            }));
         }
         [HttpGet]
         [Route("done")]
-        public async Task<IActionResult> donw()
+        public async Task<IActionResult> done()
         {
-            var inreview = databaseAccess.ideaTable.Where(x => x.status == "Done");
-            return Ok(inreview);
+            var done =await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "Done").ToListAsync();
+            return Ok(done.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.User.userName,
+                Title = x.title,
+                Shortdescription = x.shortDescription,
+                Longdescription = x.longDescription,
+                Status = x.status,
+                like = x.like,
+                signoff = x.signOff,
+                CreatedTime = x.ideaCreatedDate,
+
+                Contributor = x.contributors.Where(z => z.ideaId == x.Id).Select(y => new
+                {
+                    Name = y.Name,
+                }).ToList()
+            }));
         }
         [HttpGet]
         [Route("highestlike")]
