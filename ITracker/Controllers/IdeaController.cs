@@ -72,21 +72,21 @@ namespace ITracker.Controllers
         [Route("todo")]
         public async Task<IActionResult> getTodo()
         {
-            var todo = databaseAccess.ideaTable.Where(x => x.status == "Todo");
+            var todo = databaseAccess.ideaTable.Where(x => x.status == "To Do");
             return Ok(todo);
         }
         [HttpGet]
         [Route("inprogess")]
         public async Task<IActionResult> inprogress()
         {
-            var inprogress = databaseAccess.ideaTable.Where(x => x.status == "Inprogress");
+            var inprogress = databaseAccess.ideaTable.Where(x => x.status == "In Progress");
             return Ok(inprogress);
         }
         [HttpGet]
         [Route("inreview")]
         public async Task<IActionResult> inreview()
         {
-            var inreview = databaseAccess.ideaTable.Where(x => x.status == "Inreview");
+            var inreview = databaseAccess.ideaTable.Where(x => x.status == "In Review");
             return Ok(inreview);
         }
         [HttpGet]
@@ -113,6 +113,16 @@ namespace ITracker.Controllers
 
             return Ok(query);
 
+        }
+        [HttpPut]
+        [Route("update/id")]
+        public async Task<IActionResult> updateresult(UpdateStatus updateStatus) {
+            Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == updateStatus.id);
+            idea.status=updateStatus.status;
+
+            databaseAccess.ideaTable.Update(idea);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(idea);
         }
         [HttpPost]
         public async Task<ActionResult<Idea>> add(NewIdea newIdea)
@@ -252,17 +262,17 @@ namespace ITracker.Controllers
                 {
                     count=x.ToList().Count()
                 });
-            var todo = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Todo")).GroupBy(c => c.Id)
+            var todo = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("To Do")).GroupBy(c => c.Id)
                .Select(x => new
                {
                    count = x.ToList().Count()
                });
-            var Inprogress = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Inprogress")).GroupBy(c => c.Id)
+            var Inprogress = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("In Progress")).GroupBy(c => c.Id)
                 .Select(x => new
                 {
                     count = x.ToList().Count()
                 });
-            var Inreview = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Inreview")).GroupBy(c => c.Id)
+            var Inreview = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("In Review")).GroupBy(c => c.Id)
                 .Select(x => new
                 {
                     count = x.ToList().Count()
