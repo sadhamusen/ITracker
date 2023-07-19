@@ -53,7 +53,7 @@ namespace ITracker.Services
             user.Role = databaseAccess.rolesTable.Find(3);
             user.created_time = DateTime.Now.ToShortDateString();
             user.rId = user.Role.id;
-        
+            user.rating=newUser.rating;
             databaseAccess.usersTable.AddAsync(user);
 
             user.Role = databaseAccess.rolesTable.Find(3);

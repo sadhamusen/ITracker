@@ -11,7 +11,7 @@ namespace ITracker.Controllers
         public string Status { get; set; }
         public int idOfOwner { get; set; }
 
-        public List<int> IdOfContributors { get; set; }
+        public List<int>? IdOfContributors { get; set; }
         
         
 

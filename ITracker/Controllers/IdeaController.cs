@@ -42,7 +42,7 @@ namespace ITracker.Controllers
             //});
             //return await databaseAccess.ideaTable.ToListAsync();
 
-            var result= await databaseAccess.ideaTable.Include(u=>u.User).Include(u=>u.contributors).Where(x => x.isDelete == 0).ToListAsync();
+            var result= await databaseAccess.ideaTable.Include(u=>u.User).Include(u=>u.contributors).Where(x => x.Id==1).ToListAsync();
             return Ok(result.Select(x => new
             {
                 Id=x.Id,
@@ -55,7 +55,7 @@ namespace ITracker.Controllers
                 signoff=x.signOff,
                 CreatedTime = x.ideaCreatedDate,
 
-                Contributor = x.contributors.Where(z=>z.ideaId==x.Id).Select (y => new
+                Contributor = x.contributors.Select(y => new
                 {
                     Name = y.Name,
                 }).ToList()
@@ -219,17 +219,18 @@ namespace ITracker.Controllers
 
             // idea.Approver= databaseAccess.approversTable.FirstOrDefault(x=>x.id==newIdea.approverId);
 
-            idea.User = databaseAccess.usersTable.FirstOrDefault(x => x.id == newIdea.idOfOwner);
+            idea.User = await databaseAccess.usersTable.FindAsync(newIdea.idOfOwner);
 
 
-            await databaseAccess.ideaTable.AddAsync(idea);
-            if(newIdea.IdOfContributors.Count() ==1&& newIdea.IdOfContributors.IndexOf(0)==0)
+
+            if (newIdea.IdOfContributors.Count()==1&&newIdea.IdOfContributors.IndexOf(0)==0)
             {
 
             }
-            else if (newIdea.IdOfContributors.Count()!=0)
+            else if (newIdea.IdOfContributors.Count() != 0)
             {
-                foreach (var id in newIdea.IdOfContributors) {
+                foreach (var id in newIdea.IdOfContributors)
+                {
                     Contributor contributor = new Contributor();
                     User user = await databaseAccess.usersTable.FindAsync(id);
                     contributor.UserId = user.id;
@@ -240,11 +241,11 @@ namespace ITracker.Controllers
 
                     await databaseAccess.contributorTable.AddAsync(contributor);
 
-                    
+
                 }
             }
 
-           
+            await databaseAccess.ideaTable.AddAsync(idea);
 
             await databaseAccess.SaveChangesAsync();
 
@@ -329,6 +330,7 @@ namespace ITracker.Controllers
         public async Task<ActionResult> Numberofpost() {
             var idea = databaseAccess.ideaTable.Where(x => x.isDelete == 0).Count();
             var query = databaseAccess.usersTable.OrderByDescending(p => p.rating).FirstOrDefault();
+            var highestrating = new { name = query.userName, rating = query.rating };
             var GroupedTags = databaseAccess.ideaTable.Where(x=>x.isDelete==0).GroupBy(c => c.idOfOwner)
                 .Select(x=>new
                 {
@@ -336,34 +338,15 @@ namespace ITracker.Controllers
                     title=x.First().title,
                     Count=x.ToList().Count()
 
-                });
-            var newidea = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("New Idea")).GroupBy(c => c.Id)
+                }).OrderByDescending(p=>p.Count).Take(1);
+            var newidea = databaseAccess.ideaTable.Where(x => x.isDelete == 0).GroupBy(c => c.status)
                 .Select(x => new
                 {
-                    count=x.ToList().Count()
+                    Count=x.ToList().Count(),
+                    Status=x.First().status,
                 });
-            var todo = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("To Do")).GroupBy(c => c.Id)
-               .Select(x => new
-               {
-                   count = x.ToList().Count()
-               });
-            var Inprogress = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("In Progress")).GroupBy(c => c.Id)
-                .Select(x => new
-                {
-                    count = x.ToList().Count()
-                });
-            var Inreview = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("In Review")).GroupBy(c => c.Id)
-                .Select(x => new
-                {
-                    count = x.ToList().Count()
-                });
-
-            var Done = databaseAccess.ideaTable.Where(x => x.isDelete == 0 && x.status.Equals("Done")).GroupBy(c => c.Id)
-                .Select(x => new
-                {
-                    count = x.ToList().Count()
-                });
-            return Ok(new { noofpost = idea,groupby=GroupedTags,newidea=newidea,todo=todo,inprogress=Inprogress,inreview= Inreview,done=Done });
+           
+            return Ok(new {highestrating=highestrating, noofpost = idea,groupby=GroupedTags,newidea=newidea });
         }
     }
 }
