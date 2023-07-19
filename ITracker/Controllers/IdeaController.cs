@@ -286,7 +286,7 @@ namespace ITracker.Controllers
             idea.like = idea.like + 1;
             databaseAccess.ideaTable.Update(idea);
             await databaseAccess.SaveChangesAsync();
-            return Ok(idea);
+            return Ok(idea.like);
         }
         
         [HttpPut]
