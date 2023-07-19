@@ -41,7 +41,16 @@ namespace ITracker.Controllers
         {
             return Ok(await userService.getAlluser());
         }
-
+        [HttpPut]
+        [Route("Rating")]
+        public async Task<IActionResult> rating(Updaterating updaterating)
+        {
+             User user = await databaseAccess.usersTable.FirstOrDefaultAsync(x => x.id == updaterating.id);
+            user.rating=updaterating.rating;
+            databaseAccess.usersTable.Update(user);
+            await databaseAccess.SaveChangesAsync();
+            return Ok(user);
+        }
         [HttpPost]
 
         public async Task<ActionResult> add(NewUser newUser)

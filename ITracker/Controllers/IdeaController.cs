@@ -288,6 +288,7 @@ namespace ITracker.Controllers
             await databaseAccess.SaveChangesAsync();
             return Ok(idea);
         }
+        
         [HttpPut]
         [Route("delete/{deletetaskId:int}")]
         public async Task<IActionResult> delete([FromRoute] int deletetaskId)
