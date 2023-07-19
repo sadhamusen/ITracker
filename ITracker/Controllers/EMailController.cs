@@ -22,15 +22,13 @@ namespace InitiativesTracker.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Approver,User")]
-        public string SendMail([FromBody] string[] emailArray)
+
+        public string SendMailall(string[] emailArray)
         {
             using (MailMessage mail = new MailMessage())
             {
                 mail.From = new MailAddress("sadhamusen.it19@bitsathy.ac.in");
                 string[] strArray = emailArray;
-
-
-
 
                 for (int i = 0; i < strArray.Length; i++)
                 {
@@ -52,20 +50,37 @@ namespace InitiativesTracker.Controllers
 
 
         [HttpGet]
-        [Route("{userid}")]
-        public async Task<ActionResult<User>> getemail([FromRoute] int userid){
-           var u=databaseAccess.usersTable.Find(userid);
+        [Route("all")]
+        public async Task<ActionResult<User>> getemail()
+        {
+            var posts = databaseAccess.usersTable
+                           .Where(p => p.email != null)
+                           .Select(s => s.email).ToArray();
+            SendMailall(posts);
+            return Ok(posts);
 
-            return Ok(new { email=u.email});
-          }
+
+        }
+    }
+        
+
+
+        //[HttpGet]
+        //[Route("{userid}")]
+        //public async Task<ActionResult<User>> getemail([FromRoute] int userid)
+        //{
+        //    var u = databaseAccess.usersTable.Find(userid);
+
+        //    return Ok(new { email = u.email });
+        //}
         //[HttpGet]
         //[Route("all")]
         //public async Task<ActionResult<User>> getemail(User user)
         //{
         //    var u =await databaseAccess.usersTable.Where(x=>x.email!=null).ToListAsync();
-            
+
         //    return Ok(u);
         //}
 
+        
     }
-}
