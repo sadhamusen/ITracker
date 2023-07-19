@@ -337,7 +337,8 @@ namespace ITracker.Controllers
                 {
                     Id = x.First().Id,
                     title=x.First().title,
-                    Count=x.ToList().Count()
+                    Count=x.ToList().Count(),
+                    name=x.First().User.userName
 
                 }).OrderByDescending(p=>p.Count).Take(1);
             var newidea = databaseAccess.ideaTable.Where(x => x.isDelete == 0).GroupBy(c => c.status)
