@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using ITracker.Models;
 using Microsoft.AspNetCore.Authorization;
+using InitiativeTracker.Models;
+using InitiativeTracker.DataBaseConnection;
+using Microsoft.EntityFrameworkCore;
 
 namespace InitiativesTracker.Controllers
 {
@@ -10,6 +13,12 @@ namespace InitiativesTracker.Controllers
     [Route("/mail")]
     public class EMailController : Controller
     {
+        private readonly DatabaseAccess databaseAccess;
+
+        public EMailController(DatabaseAccess databaseAccess)
+        {
+            this.databaseAccess = databaseAccess;
+        }
 
         [HttpPost]
         [Authorize(Roles = "Admin,Approver,User")]
@@ -40,5 +49,23 @@ namespace InitiativesTracker.Controllers
                 return "mail sent";
             }
         }
+
+
+        [HttpGet]
+        [Route("{userid}")]
+        public async Task<ActionResult<User>> getemail([FromRoute] int userid){
+           var u=databaseAccess.usersTable.Find(userid);
+
+            return Ok(new { email=u.email});
+          }
+        //[HttpGet]
+        //[Route("all")]
+        //public async Task<ActionResult<User>> getemail(User user)
+        //{
+        //    var u =await databaseAccess.usersTable.Where(x=>x.email!=null).ToListAsync();
+            
+        //    return Ok(u);
+        //}
+
     }
 }

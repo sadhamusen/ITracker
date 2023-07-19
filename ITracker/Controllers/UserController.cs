@@ -158,7 +158,7 @@ namespace ITracker.Controllers
         [HttpGet]
         [Route("{userid}")]
         public async Task<ActionResult<User>> getuserdetails([FromRoute] int userid) {
-            User user = await databaseAccess.usersTable.FirstOrDefaultAsync(x => x.id == userid);
+            User user = await databaseAccess.usersTable.Include(x=>x.Role).FirstOrDefaultAsync(x => x.id == userid);
             return user;
         }
     }
