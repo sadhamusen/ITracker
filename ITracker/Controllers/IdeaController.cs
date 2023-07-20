@@ -199,20 +199,41 @@ namespace ITracker.Controllers
         public async Task<ActionResult<IEnumerable<Idea>>> gettaskbyid([FromRoute] int taskid)
         {
             var query = databaseAccess.ideaTable.Include(x=>x.contributors).Include(z=>z.User).Where(x => x.Id.Equals(taskid) ).ToList();
-
-            return Ok(query.Select(x => new
+            if (query.First().approverId != null)
             {
-                id=x.Id,
-                title=x.title,
-                shortDescription=x.shortDescription,
-                longDescription=x.longDescription,
-                stratDate=x.startDate,
-                endDate=x.endDate,
-                status=x.status,
-                ideacreatedtime=x.ideaCreatedDate,
-                user=x.User.userName,
-                contributors=x.contributors,
-            }));
+                var query2 = databaseAccess.usersTable.Find(query.First().approverId);
+
+                return Ok(query.Select(x => new
+                {
+                    id = x.Id,
+                    approver = query2.userName,
+                    title = x.title,
+                    shortDescription = x.shortDescription,
+                    longDescription = x.longDescription,
+                    stratDate = x.startDate,
+                    endDate = x.endDate,
+                    status = x.status,
+                    ideacreatedtime = x.ideaCreatedDate,
+                    user = x.User.userName,
+                    contributors = x.contributors,
+                }));
+
+            }
+            else {
+                return Ok(query.Select(x => new
+                {
+                    id = x.Id,
+                    title = x.title,
+                    shortDescription = x.shortDescription,
+                    longDescription = x.longDescription,
+                    stratDate = x.startDate,
+                    endDate = x.endDate,
+                    status = x.status,
+                    ideacreatedtime = x.ideaCreatedDate,
+                    user = x.User.userName,
+                    contributors = x.contributors,
+                }));
+            }
 
         }
         [HttpPut]
