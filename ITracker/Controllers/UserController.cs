@@ -71,8 +71,6 @@ namespace ITracker.Controllers
 
         [HttpPost]
         [Route("/auth")]
-
-        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<User>> UserAuth(AuthUser authUser)
         {
             // Find the value by the id of the customer.
@@ -120,7 +118,7 @@ namespace ITracker.Controllers
         }
 
         [HttpPut]
-
+        //[Authorize(Roles ="Admin")]
         public async Task<ActionResult> edit(EditUser editUser)
         {
             return Ok(await userService.update(editUser));

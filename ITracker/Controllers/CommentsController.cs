@@ -19,7 +19,7 @@ namespace ITracker.Controllers
             this.databaseAccess = databaseAccess;
         }
         [HttpGet]
-       // [Authorize(Roles ="Admin,Approver,User")]
+        //[Authorize(Roles ="Admin,Approver,User")]
         public async Task<ActionResult<IEnumerable<Comments>>> get()
         {
             // var result= await databaseAccess.commentsTable.ToListAsync();
@@ -32,7 +32,7 @@ namespace ITracker.Controllers
         }
 
         [HttpPost]
-     //   [Authorize(Roles = "Admin,Approver,User")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<Comments>> add(NewComments newComments)
         {
 

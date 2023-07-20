@@ -12,7 +12,7 @@ namespace ITracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-//    [Authorize(Roles = "Admin,Approver")]
+ //   [Authorize(Roles = "Admin,Approver")]
     public class TaskApproverController : ControllerBase
     {
         public taskApproverService taskApproverService;

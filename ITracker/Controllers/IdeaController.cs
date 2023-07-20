@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
+using System.Xml.Linq;
 
 namespace ITracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize(Roles = "Admin,Approver,User")]
     public class IdeaController : ControllerBase
     {
         public ideaService ideaService;
@@ -26,6 +26,7 @@ namespace ITracker.Controllers
         }
 
         [HttpGet]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<IEnumerable<Idea>>> get()
         {
             var allData = databaseAccess.ideaTable.Where(x => x.isDelete == 0);
@@ -64,6 +65,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("newidea")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> newidea()
         {
             var new_idea = await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "New Idea").ToListAsync();
@@ -87,6 +89,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("todo")]
+       // [Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> getTodo()
         {
             var todo = await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 &&  x.status == "To Do").ToListAsync();
@@ -110,6 +113,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("inprogess")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> inprogress()
         {
             var inprogress =await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "In Progress").ToListAsync();
@@ -133,6 +137,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("inreview")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> inreview()
         {
             var inreview =await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "In Review").ToListAsync();
@@ -156,6 +161,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("done")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> done()
         {
             var done =await databaseAccess.ideaTable.Include(u => u.User).Include(u => u.contributors).Where(x => x.isDelete == 0 && x.status == "Done").ToListAsync();
@@ -179,6 +185,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("highestlike")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> highestlike()
         {
             var query = databaseAccess.ideaTable.Include(x=>x.User).OrderByDescending(p => p.like).FirstOrDefault();
@@ -188,15 +195,29 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("{taskid}")]
-        public async Task<IActionResult> gettaskbyid([FromRoute] int taskid)
+        //[Authorize(Roles = "Admin,Approver,User")]
+        public async Task<ActionResult<IEnumerable<Idea>>> gettaskbyid([FromRoute] int taskid)
         {
-            var query = databaseAccess.ideaTable.Include(x=>x.contributors).FirstOrDefault(x => x.Id.Equals(taskid));
+            var query = databaseAccess.ideaTable.Include(x=>x.contributors).Include(z=>z.User).Where(x => x.Id.Equals(taskid) ).ToList();
 
-            return Ok(query);
+            return Ok(query.Select(x => new
+            {
+                id=x.Id,
+                title=x.title,
+                shortDescription=x.shortDescription,
+                longDescription=x.longDescription,
+                stratDate=x.startDate,
+                endDate=x.endDate,
+                status=x.status,
+                ideacreatedtime=x.ideaCreatedDate,
+                user=x.User.userName,
+                contributors=x.contributors,
+            }));
 
         }
         [HttpPut]
         [Route("update/id")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> updateresult(UpdateStatus updateStatus) {
             Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == updateStatus.id);
             idea.status=updateStatus.status;
@@ -206,6 +227,7 @@ namespace ITracker.Controllers
             return Ok(idea);
         }
         [HttpPost]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<Idea>> add(NewIdea newIdea)
         {
 
@@ -254,6 +276,7 @@ namespace ITracker.Controllers
             return Ok(idea);
         }
         [HttpPut]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> updateidea(Updateidea updateidea)
         {
             Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == updateidea.Id);
@@ -269,9 +292,10 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("excel")]
-        public async Task<ActionResult> excelsheet() {
-            var user=databaseAccess.ideaTable.Where(x=>x.isDelete==0).ToList();
-            return Ok(user);
+        //[Authorize(Roles = "Admin,Approver,User")]
+        public async Task<ActionResult<IEnumerable<Idea>>> excelsheet() {
+            var user = databaseAccess.ideaTable.Include(p=>p.User).Where(x => x.isDelete == 0).ToList();
+            return Ok(user.Select(y => new { taskid=y.Id, username = y.User.userName,title=y.title, startdate =y.startDate,enddate=y.endDate,signoff=y.signOff,like=y.like}));
         }
         //[HttpPut]
         //[Route("{taskId:int}")]
@@ -287,6 +311,7 @@ namespace ITracker.Controllers
         //}
         [HttpPut]
         [Route("like/{liketaskId:int}")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> like([FromRoute] int liketaskId)
         {
             Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == liketaskId);
@@ -298,6 +323,7 @@ namespace ITracker.Controllers
 
         //[Authorize(Roles = "Admin,User")]
         [HttpPut]
+        //[Authorize(Roles = "Admin,Approver,User")]
         [Route("delete/{deletetaskId:int}")]
 
         public async Task<IActionResult> delete([FromRoute] int deletetaskId)
@@ -311,6 +337,7 @@ namespace ITracker.Controllers
 
         [HttpGet]
         [Route("get/{getuserstask}")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult> gettaskofuser([FromRoute]int getuserstask) {
             //Idea idea = new Idea();
             //var query = databaseAccess.ideaTable.Include(x=>x.contributors).Where(x => x.idOfOwner == getuserstask);
@@ -337,6 +364,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("Numberofpost")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult> Numberofpost() {
             var idea = databaseAccess.ideaTable.Where(x => x.isDelete == 0).Count();
             var query = databaseAccess.usersTable.OrderByDescending(p => p.rating).FirstOrDefault();

@@ -10,7 +10,7 @@ namespace ITracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-  // [Authorize(Roles = "Admin,Approver,User")]
+  //[Authorize(Roles = "Admin,Approver,User")]
     public class RoleController : ControllerBase
     {
 
