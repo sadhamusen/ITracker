@@ -37,12 +37,14 @@ namespace ITracker.Controllers
         }
 
         [HttpGet]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<IActionResult> get()
         {
             return Ok(await userService.getAlluser());
         }
         [HttpPut]
         [Route("Rating")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> rating(Updaterating updaterating)
         {
              User user = await databaseAccess.usersTable.FirstOrDefaultAsync(x => x.id == updaterating.id);
@@ -52,6 +54,7 @@ namespace ITracker.Controllers
             return Ok(user);
         }
         [HttpPost]
+        //[Authorize(Roles = "Admin,Approver,User")]
 
         public async Task<ActionResult> add(NewUser newUser)
         {
@@ -65,9 +68,11 @@ namespace ITracker.Controllers
             }
             return Ok(user);
         }
+
         [HttpPost]
         [Route("/auth")]
 
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<User>> UserAuth(AuthUser authUser)
         {
             // Find the value by the id of the customer.
@@ -113,6 +118,7 @@ namespace ITracker.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
+
         [HttpPut]
 
         public async Task<ActionResult> edit(EditUser editUser)
@@ -123,6 +129,7 @@ namespace ITracker.Controllers
 
         [HttpPut]
         [Route("updatedetails/{id:int}")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<User>> updateuserdetails([FromRoute] int id, updateuserdetails updateuserdetails)
         {
             if (updateuserdetails != null)
@@ -157,6 +164,7 @@ namespace ITracker.Controllers
 
         [HttpGet]
         [Route("{userid}")]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<User>> getuserdetails([FromRoute] int userid) {
             User user = await databaseAccess.usersTable.Include(x=>x.Role).FirstOrDefaultAsync(x => x.id == userid);
             return user;

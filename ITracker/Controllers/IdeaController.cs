@@ -13,6 +13,7 @@ namespace ITracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   // [Authorize(Roles = "Admin,Approver,User")]
     public class IdeaController : ControllerBase
     {
         public ideaService ideaService;
@@ -266,6 +267,12 @@ namespace ITracker.Controllers
             return Ok(idea);
 
         }
+        [HttpGet]
+        [Route("excel")]
+        public async Task<ActionResult> excelsheet() {
+            var user=databaseAccess.ideaTable.Where(x=>x.isDelete==0).ToList();
+            return Ok(user);
+        }
         //[HttpPut]
         //[Route("{taskId:int}")]
         //public async Task<IActionResult> updatedate([FromRoute] int taskId)
@@ -288,9 +295,11 @@ namespace ITracker.Controllers
             await databaseAccess.SaveChangesAsync();
             return Ok(idea.like);
         }
-        
+
+        //[Authorize(Roles = "Admin,User")]
         [HttpPut]
         [Route("delete/{deletetaskId:int}")]
+
         public async Task<IActionResult> delete([FromRoute] int deletetaskId)
         {
             Idea idea = databaseAccess.ideaTable.FirstOrDefault(x => x.Id == deletetaskId);

@@ -19,6 +19,7 @@ namespace ITracker.Controllers
             this.databaseAccess = databaseAccess;
         }
         [HttpGet]
+       // [Authorize(Roles ="Admin,Approver,User")]
         public async Task<ActionResult<IEnumerable<Comments>>> get()
         {
             // var result= await databaseAccess.commentsTable.ToListAsync();
@@ -31,6 +32,7 @@ namespace ITracker.Controllers
         }
 
         [HttpPost]
+     //   [Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<Comments>> add(NewComments newComments)
         {
 
@@ -51,6 +53,20 @@ namespace ITracker.Controllers
 
             return Ok(newComments);
 
+        }
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<IEnumerable<Comments>>> getcomments([FromRoute] int id) {
+            var comments=  await databaseAccess.commentsTable.Include(x=>x.user).Where(c => c.Taskid == id).ToListAsync();
+                return Ok(comments.Select( x=> new
+                {
+                    TaskId = x.Taskid,
+                    UserId=x.userId,
+                    UserName=x.user.userName,
+                    date=x.CommentsDateOnly,
+                    comment=x.Comment,
+
+                }));
         }
     }
 }

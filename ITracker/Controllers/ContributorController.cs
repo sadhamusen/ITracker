@@ -19,7 +19,7 @@ namespace ITracker.Controllers
         }
         [HttpGet]
         [Route("{taskId:int}")]
-
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<Contributor>> get([FromRoute] int taskId)
         {
             /*var result = databaseAccess.contributorTable.Find(taskId);
@@ -37,6 +37,7 @@ namespace ITracker.Controllers
 
         }
         [HttpPost]
+        //[Authorize(Roles = "Admin,Approver,User")]
         public async Task<ActionResult<Idea>> add(NewContributor newcontributor)
         {
             //contributor contributor = new contributor();
